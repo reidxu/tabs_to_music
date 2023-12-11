@@ -93,5 +93,5 @@ if __name__ == "__main__":
     XO = Tab('XO','https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/xo-tabs-1729693')
     isohel = Tab('Isohel', 'https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/isohel-tabs-2954888')
     rock_roll = Tab('Rock and Roll', 'https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/rock-and-roll-tabs-1869697')
-    rock_roll.tabs_to_txt()
+    print(isohel.clean_tabs())
    
