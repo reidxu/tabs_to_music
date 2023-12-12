@@ -28,19 +28,7 @@ class Sheet:
 
         return
     
-    def wrap(self):
-        '''
-        This code will wrap up every 6 elements of the tab list into its own sublist 
-        
-        Input:   
-        tab **list**
-            List of full tab straight from UG
-        '''
-        sublist = 6
-
-        # Use list comprehension to create sublists
-        wrapped = [self.tab[i:i+sublist] for i in range(0, len(self.tab), sublist)]
-        return wrapped
+    
     
     def find_pos(self, start, step):
         '''
@@ -49,12 +37,16 @@ class Sheet:
         '''
         scale = {1:'c', 2:'c#', 3:'d', 4:'d#', 5:'e', 6:'f', 7:'f#', 8:'g', 9:'g#', 10:'a', 11:'a#', 12:'b'}
         length_scale  = 12
-        position = (step-(length_scale-start)) % length_scale 
+        if start + step != length_scale: #check if position will equal zero
+            position = (step-(length_scale-start)) % length_scale 
+        else:
+            position = start+step
         note  =  scale[position]
-        octave_loops = step // length_scale #count how many loops were taken
+        octave_loops = step // (13-start) #count how many loops were taken
+    
         return note, octave_loops
 
-    def translate_single(self):
+    def translate_single(self, single_tab):
         '''
         This function will translate a single tab of 6 strings
         single_tab format: [e, B, G, D, A, E]
@@ -67,7 +59,7 @@ class Sheet:
         scale = {1:'c', 2:'c#', 3:'d', 4:'d#', 5:'e', 6:'f', 7:'f#', 8:'g', 9:'g#', 10:'a', 11:'a#', 12:'b'}
         scale_rev = {'c':1, 'c#':2, 'd':3, 'd#':4, 'e':5, 'f':6, 'f#':7, 'g':8, 'g#':9, 'a':10, 'a#':11, 'b':12}
         notes = {}
-        single_tab = self.tab
+    
         for num_string in range(6):
             string = single_tab[num_string]
             note_string = string[0] #this is the start
@@ -103,19 +95,34 @@ class Sheet:
                     notes[count] = note + str(octave_loops + start_octave)
                     
         return notes
-    def dict_to_guido(self):
+    def dict_to_guido(self, single_tab):
         '''
         This function takes the output of translate_single and puts it in guido notation
         '''
-        note_dict =  self.translate_single()
+        note_dict =  self.translate_single(single_tab)
         positions = sorted(note_dict.keys())
 
         mega_string  = ''
         for i in positions:
             mega_string += '{} '.format(note_dict[i])
-        mega_string =  '[' + mega_string
-        mega_string  = mega_string + ']'
+        
         return mega_string
+    
+def full_convert(songname, URL):
+    #Initialize Tab object
+    tab_obj = Tab(songname,URL)
+    #Pull and wrap up the tabs
+    wrapped  = tab_obj.wrap()
+    sheet_obj = Sheet(songname, wrapped)
+    final_convert = ''
+    for single_tab in wrapped:
+        dict_to_guido = sheet_obj.dict_to_guido(single_tab)
+        final_convert = final_convert + dict_to_guido
+    final_convert = final_convert + ']'
+    final_convert = '[' + final_convert
+        
+    sheet_obj.input_noteserver(final_convert)
+
         
             
 
@@ -124,22 +131,16 @@ class Sheet:
     
 if __name__  == "__main__":
     guido = '[a b c]'
-    isohel_tab = Tab('Isohel', 'https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/isohel-tabs-2954888')
+    isohel = Tab('Isohel', 'https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/isohel-tabs-2954888')
     XO = Tab('XO','https://tabs.ultimate-guitar.com/tab/eden-the-eden-project/xo-tabs-1729693')
     twinkle = Tab('twinkle', 'https://tabs.ultimate-guitar.com/tab/misc-children/twinkle-twinkle-little-star-tabs-605822')
-    #tabs  = XO.clean_tabs()
+    #tabs  = isohel.clean_tabs()
     #XO_sheet  = Sheet('XO', tabs)
     #wrapped = XO_sheet.wrap()
+    #wrapped = isohel.wrap()
     
-    tab_single = ['e|------6-----------5---------------6----------5-------------------------------|', 
-        'B|-----------6-----------5--------------6----------5-5h6p5---------------------|', 
-        'G|--------------------------------------------------------5--------------------|', 
-        'D|--2/5---------1/3-------------2/5--------1/3---------------------------------|', 
-        'A|---------5-----------3--------------5----------3-----------------------------|', 
-        'E|-----------------------------------------------------------------------------|']
-    
-    test = Sheet('test_sheet', tab_single)
-    print(test.dict_to_guido())
+    full_convert('twinkle','https://tabs.ultimate-guitar.com/tab/misc-children/twinkle-twinkle-little-star-tabs-605822')
+   
 
     #test_sheet = Sheet('Test', tabs)
     #test_guido = '[a b c d e {c,e,g}]'

@@ -59,6 +59,20 @@ class Tab:
         
         return cleaned_tabs
     
+    def wrap(self):
+        '''
+        This code will wrap up every 6 elements of the tab list into its own sublist 
+        
+        Input:   
+        tab **list**
+            List of full tab straight from UG
+        '''
+        sublist = 6
+        clean_tabs  = self.clean_tabs()
+        # Use list comprehension to create sublists
+        wrapped = [clean_tabs[i:i+sublist] for i in range(0, len(clean_tabs), sublist)]
+        return wrapped
+    
     def tab_to_arr(self): 
         '''
         Convert cleaned tab list to array grouped as six
