@@ -56,20 +56,24 @@ class Sheet:
                 Dictionary of {position of note : letter  of note} format
         '''
         
-        scale = {1:'c', 2:'c#', 3:'d', 4:'d#', 5:'e', 6:'f', 7:'f#', 8:'g', 9:'g#', 10:'a', 11:'a#', 12:'b'}
+        
         scale_rev = {'c':1, 'c#':2, 'd':3, 'd#':4, 'e':5, 'f':6, 'f#':7, 'g':8, 'g#':9, 'a':10, 'a#':11, 'b':12}
         notes = {}
     
         for num_string in range(6):
             string = single_tab[num_string]
             note_string = string[0] #this is the start
+
+            # This section of if blocks checks which string is being read (EADGBe) and
+            # Translates to the appropriate octave in relation to middle C in guido
+            if num_string in [4,5]:
+                start_octave = -1
+            if num_string in [1,2,3]:
+                start_octave = 0
+            if num_string == 0:
+                start_octave = 1
+
         
-            if note_string == 'E':
-                start_octave = 4
-            if note_string in ['B', 'G', 'D']:
-                start_octave  = 3
-            if note_string in ['e', 'A']:
-                start_octave = 2
 
             list_string = []
             for i in string:
@@ -120,7 +124,7 @@ def full_convert(songname, URL):
         final_convert = final_convert + dict_to_guido
     final_convert = final_convert + ']'
     final_convert = '[' + final_convert
-        
+    print(final_convert)
     sheet_obj.input_noteserver(final_convert)
 
         
@@ -139,8 +143,8 @@ if __name__  == "__main__":
     #wrapped = XO_sheet.wrap()
     #wrapped = isohel.wrap()
     
-    full_convert('twinkle','https://tabs.ultimate-guitar.com/tab/misc-children/twinkle-twinkle-little-star-tabs-605822')
-   
+    #full_convert('twinkle','https://tabs.ultimate-guitar.com/tab/misc-children/twinkle-twinkle-little-star-tabs-605822')
+    full_convert('Happy Birthday', 'https://tabs.ultimate-guitar.com/tab/misc-traditional/happy-birthday-tabs-42938')
 
     #test_sheet = Sheet('Test', tabs)
     #test_guido = '[a b c d e {c,e,g}]'
